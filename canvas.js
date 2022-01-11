@@ -77,6 +77,7 @@ class Enemy {
     }
 }
 
+const friction = 0.99;
 class Particle { 
     constructor (x, y, radius, colour, velocity) {
         this.x = x;
@@ -84,20 +85,27 @@ class Particle {
         this.radius = radius;
         this.colour = colour;
         this.velocity = velocity;
+        this.alpha = 1;
 
     }
 
     draw () {
+        context.save();
+        context.globalAlpha = this.alpha;
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
         context.fillStyle = this.colour;
         context.fill();
+        context.restore();
     }
 
     update() {
         this.draw();
+        this.velocity.x *= friction;
+        this.velocity.y *= friction;
         this.x = this.x + this.velocity.x;
         this.y = this.y + this.velocity.y;
+        this.alpha -= 0.01;
     }
 }
 
@@ -138,6 +146,15 @@ function animate() {
     animationID = requestAnimationFrame(animate);
     context.fillStyle = 'rgba(0, 0, 0, 0.1)';
     context.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((particle, index) => {
+        if (particle.alpha <= 0) {
+            particles.splice(index, 1);
+        } else {
+            particle.update();
+        }
+    });
+
     projectiles.forEach((projectile, index) => {
         projectile.update();
         if (projectileOutOfBounds(projectile)) {
@@ -158,8 +175,8 @@ function animate() {
         projectiles.forEach((projectile, projIndex) => {
             const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
             if (dist - projectile.radius - enemy.radius < 1) {
-                for (let i = 0; i < 8; i++) {
-                    particles.push(new Particle(projectile.x, projectile.y, 3, enemy.colour, {x: Math.random() - 0.5, y: Math.random() - 0.5}));
+                for (let i = 0; i < enemy.radius * 2; i++) {
+                    particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, enemy.colour, {x: (Math.random() - 0.5) * (Math.random() * 5), y: (Math.random() - 0.5) * (Math.random() * 5)}));
                 }
                 if(enemy.radius - 10 > 5) {
                     gsap.to(enemy, {radius: enemy.radius - 10});
