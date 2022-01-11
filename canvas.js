@@ -12,34 +12,17 @@ window.addEventListener('resize', () => {
     player.y = canvas.height / 2;
 });
 
-//TODO: extrapolate circle renderer into a parent class
-class Player {
-    constructor (x, y, radius, colour) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.colour = colour;
-    }
 
-    draw () {
-        context.beginPath();
-        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-        context.fillStyle = this.colour;
-        context.fill();
-    }
-}
-
-class Projectile {
+class Entity {
     constructor (x, y, radius, colour, velocity) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.colour = colour;
         this.velocity = velocity;
-
     }
 
-    draw () {
+    draw() {
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
         context.fillStyle = this.colour;
@@ -53,38 +36,30 @@ class Projectile {
     }
 }
 
-class Enemy { 
+class Player extends Entity{
     constructor (x, y, radius, colour, velocity) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.colour = colour;
-        this.velocity = velocity;
+        super(x, y, radius, colour, velocity);
+    }
+}
+
+class Projectile extends Entity{
+    constructor (x, y, radius, colour, velocity) {
+        super(x, y, radius, colour, velocity);
 
     }
+}
 
-    draw () {
-        context.beginPath();
-        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-        context.fillStyle = this.colour;
-        context.fill();
-    }
+class Enemy extends Entity{ 
+    constructor (x, y, radius, colour, velocity) {
+        super(x, y, radius, colour, velocity);
 
-    update() {
-        this.draw();
-        this.x = this.x + this.velocity.x;
-        this.y = this.y + this.velocity.y;
     }
 }
 
 const friction = 0.99;
-class Particle { 
+class Particle extends Entity{ 
     constructor (x, y, radius, colour, velocity) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.colour = colour;
-        this.velocity = velocity;
+        super(x, y, radius, colour, velocity);
         this.alpha = 1;
 
     }
@@ -101,15 +76,15 @@ class Particle {
 
     update() {
         this.draw();
-        this.velocity.x *= friction;
-        this.velocity.y *= friction;
         this.x = this.x + this.velocity.x;
         this.y = this.y + this.velocity.y;
+        this.velocity.x *= friction;
+        this.velocity.y *= friction;
         this.alpha -= 0.01;
     }
 }
 
-const player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white');
+const player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white', {x: 0, y: 0});
 
 const projectiles = [];
 const enemies = [];
@@ -133,7 +108,7 @@ function spawnEnemies () {
         const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
         const velocity = {x: Math.cos(angle), y: Math.sin(angle)};
         enemies.push (new Enemy (x, y, radius, colour, velocity));
-    }, 1000);
+    }, (Math.random() + 0.8) * 1000);
 }
 
 function projectileOutOfBounds (projectile) {
