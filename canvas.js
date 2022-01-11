@@ -53,9 +53,55 @@ class Projectile {
     }
 }
 
+class Enemy { 
+    constructor (x, y, radius, colour, velocity) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.colour = colour;
+        this.velocity = velocity;
+
+    }
+
+    draw () {
+        context.beginPath();
+        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        context.fillStyle = this.colour;
+        context.fill();
+    }
+
+    update() {
+        this.draw();
+        this.x = this.x + this.velocity.x;
+        this.y = this.y + this.velocity.y;
+    }
+}
+
 const player = new Player(canvas.width / 2, canvas.height / 2, 30, 'blue');
 
 const projectiles = [];
+const enemies = [];
+
+function spawnEnemies () {
+    setInterval(() => {
+        const radius = Math.random() * 30 + 6;
+        let x;
+        let y;
+
+        if (Math.random() < 0.5) {
+            x = Math.random() < 0.5 ? -radius : canvas.width + radius;
+            y = Math.random() * canvas.height;
+        } else {
+            x = Math.random() * canvas.width;
+            y = Math.random() < 0.5 ? -radius : canvas.width + radius;
+        }
+        
+        const colour = 'green';
+        const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
+        const velocity = {x: Math.cos(angle), y: Math.sin(angle)};
+        enemies.push (new Enemy (x, y, radius, colour, velocity));
+    }, 1000);
+}
 
 function animate() {
     requestAnimationFrame(animate);
@@ -63,6 +109,20 @@ function animate() {
     projectiles.forEach(projectile => {
         projectile.update();
     });
+
+    enemies.forEach((enemy, enemyIndex) => {
+        enemy.update();
+
+        projectiles.forEach((projectile, projIndex) => {
+            const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
+            if (dist - projectile.radius - enemy.radius < 1) {
+                setTimeout(() => {
+                    enemies.splice(enemyIndex, 1);
+                    projectiles.splice(projIndex, 1);
+                }, 0);
+            }
+        });
+    })
     player.draw();
 }
 
@@ -73,3 +133,4 @@ window.addEventListener('click', (event) => {
 });
 
 animate();
+spawnEnemies();
