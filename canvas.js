@@ -121,7 +121,13 @@ function animate() {
     animationID = requestAnimationFrame(animate);
     context.fillStyle = 'rgba(0, 0, 0, 0.1)';
     context.fillRect(0, 0, canvas.width, canvas.height);
+    updateParticles();
+    updateProjectiles();
+    updateEnemies();
+    player.draw();
+}
 
+function updateParticles () {
     particles.forEach((particle, index) => {
         if (particle.alpha <= 0) {
             particles.splice(index, 1);
@@ -129,7 +135,9 @@ function animate() {
             particle.update();
         }
     });
+}
 
+function updateProjectiles () {
     projectiles.forEach((projectile, index) => {
         projectile.update();
         if (projectileOutOfBounds(projectile)) {
@@ -138,7 +146,9 @@ function animate() {
             }, 0);
         }
     });
+}
 
+function updateEnemies () {
     enemies.forEach((enemy, enemyIndex) => {
         enemy.update();
 
@@ -166,8 +176,7 @@ function animate() {
                 }
             }
         });
-    })
-    player.draw();
+    });
 }
 
 window.addEventListener('click', (event) => {
