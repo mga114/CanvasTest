@@ -1,6 +1,8 @@
 const canvas = document.querySelector("#canvas");
 const context = canvas.getContext("2d");
 const scoreElement = document.querySelector("#scoreElement");
+const startButton = document.querySelector("#startButton");
+const menuUI = document.querySelector("#menuUI");
 
 //Resizing
 canvas.height = window.innerHeight;
@@ -193,5 +195,8 @@ window.addEventListener('click', (event) => {
     projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, 'white', velocity));
 });
 
-animate();
-spawnEnemies();
+startButton.addEventListener('click', () => {
+    animate();
+    spawnEnemies();
+    menuUI.style.display = 'none';
+});
