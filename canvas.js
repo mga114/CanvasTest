@@ -1,5 +1,6 @@
 const canvas = document.querySelector("#canvas");
 const context = canvas.getContext("2d");
+const scoreElement = document.querySelector("#scoreElement");
 
 //Resizing
 canvas.height = window.innerHeight;
@@ -85,6 +86,7 @@ class Particle extends Entity{
 }
 
 const player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white', {x: 0, y: 0});
+let score = 0;
 
 const projectiles = [];
 const enemies = [];
@@ -160,20 +162,26 @@ function updateEnemies () {
         projectiles.forEach((projectile, projIndex) => {
             const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
             if (dist - projectile.radius - enemy.radius < 1) {
+
                 for (let i = 0; i < enemy.radius * 2; i++) {
                     particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, enemy.colour, {x: (Math.random() - 0.5) * (Math.random() * 5), y: (Math.random() - 0.5) * (Math.random() * 5)}));
                 }
+
                 if(enemy.radius - 10 > 5) {
                     gsap.to(enemy, {radius: enemy.radius - 10});
                     setTimeout(() => {
                         projectiles.splice(projIndex, 1);
                     }, 0);
+                    score += 100;
                 } else {
                     setTimeout(() => {
                         enemies.splice(enemyIndex, 1);
                         projectiles.splice(projIndex, 1);
                     }, 0);
+                    score += 250;
                 }
+
+                scoreElement.innerHTML = score;
             }
         });
     });
