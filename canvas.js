@@ -3,6 +3,7 @@ const context = canvas.getContext("2d");
 const scoreElement = document.querySelector("#scoreElement");
 const startButton = document.querySelector("#startButton");
 const menuUI = document.querySelector("#menuUI");
+const menuScoreElement = document.querySelector("#menuScoreElement");
 
 //Resizing
 canvas.height = window.innerHeight;
@@ -87,12 +88,21 @@ class Particle extends Entity{
     }
 }
 
-const player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white', {x: 0, y: 0});
+let player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white', {x: 0, y: 0});
 let score = 0;
 
-const projectiles = [];
-const enemies = [];
-const particles = [];
+let projectiles = [];
+let enemies = [];
+let particles = [];
+
+function init() {
+    player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white', {x: 0, y: 0});
+    score = 0;
+    projectiles = [];
+    enemies = [];
+    particles = [];
+    scoreElement.innerHTML = 0;
+}
 
 function spawnEnemies () {
     setInterval(() => {
@@ -159,6 +169,8 @@ function updateEnemies () {
         const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
         if (dist - enemy.radius - player.radius < 1) {
             cancelAnimationFrame(animationID);
+            menuUI.style.display = 'flex';
+            menuScoreElement.innerHTML = score;
         }
 
         projectiles.forEach((projectile, projIndex) => {
@@ -196,6 +208,7 @@ window.addEventListener('click', (event) => {
 });
 
 startButton.addEventListener('click', () => {
+    init(); 
     animate();
     spawnEnemies();
     menuUI.style.display = 'none';
