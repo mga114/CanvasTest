@@ -88,12 +88,11 @@ class Particle extends Entity{
     }
 }
 
-let player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white', {x: 0, y: 0});
-let score = 0;
-
-let projectiles = [];
-let enemies = [];
-let particles = [];
+let player;
+let score;
+let projectiles;
+let enemies;
+let particles;
 
 function init() {
     player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white', {x: 0, y: 0});
